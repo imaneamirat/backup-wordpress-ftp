@@ -12,10 +12,10 @@
 # This scripts needs root privileges
 #
 # Written by : Imane AMIRAT
-# Created date: Sept 30, 2021
-# Last modified: Oct 22, 2021
-# Tested with : Python 3.8
-# Script Revision: 0.9
+# Created date: Dec 31, 2021
+# Last modified: Dec 31, 2021
+# Tested with : Python 3.9
+# Script Revision: 0.1
 #
 ##########################################################
 
@@ -26,13 +26,9 @@ import time
 import pipes
 import configparser
 import tarfile
-import boto3
-import ftplib
 import tools
-import random
 import argparse
 import encrypt
-from botocore.config import Config
 
 
 # By Default, this script will read configuration from file /etc/backup-wp.conf
@@ -57,7 +53,6 @@ SMTP_HOST = config.get('SMTP','SMTP_HOST')
 SMTP_FROM = config.get('SMTP','SMTP_FROM')
 SMTP_TO = config.get('SMTP','SMTP_TO')
 
-BACKUP_DEST = config.get('BACKUP','BACKUP_DEST')
 BACKUP_PATH = config.get('BACKUP','LOCALBKPATH')
 BACKUP_RETENTION = config.get('BACKUP','BACKUP_RETENTION')
 
