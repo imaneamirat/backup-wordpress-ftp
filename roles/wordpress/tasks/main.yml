@@ -1,0 +1,49 @@
+---
+- name: Set directory path
+  set_fact:
+    path: "{{ wp_install_path }}/{{ wp_directory_name }}"
+
+- name: Only install Wordpress when there is no index.php in the path
+  stat:
+    path: "{{ path }}/index.php"
+  register: stat_result
+
+- name: wordpress folder and user creation
+  block:
+    - name: create group wordpress
+      group:
+        name: '{{ wordpress_user }}'
+
+    - name: Create user wordpress
+      user:
+        name: '{{ wordpress_user }}'
+        shell: /bin/bash
+        group: '{{ wordpress_user }}'
+        password: "{{ wordpress_password | password_hash('sha512') }}"
+        home: "{{ path }}"
+        create_home: no
+
+    - name: add www-data user to worpdress group
+      user:
+        name: 'www-data'
+        groups: '{{ wordpress_user }}'
+        append: yes
+
+    - name: check installation path exists
+      file:
+        path: "{{ path }}"
+        state: directory
+        owner: '{{ wordpress_user }}'
+        group: '{{ wordpress_user }}'
+        mode: '775'
+
+  when: stat_result.stat.exists == False
+
+- name: Create the Virtual Host Config
+  template: src=vhost.conf.j2 dest=/etc/apache2/sites-available/wordpress.conf mode=0644
+
+- name: enable the Virtual Host
+  file:
+    src: /etc/apache2/sites-available/wordpress.conf
+    dest: /etc/apache2/sites-enabled/wordpress.conf
+    state: link

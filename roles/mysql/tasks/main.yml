@@ -1,0 +1,82 @@
+---
+  - name: Include OS-specific variables.
+    include_vars: "{{ ansible_os_family }}.yml"
+
+  - name: Install MySQL Server
+    apt:
+      name: default-mysql-server
+      state: present
+    notify:
+      - restart-mysql
+
+  - name: Install PyMySQL
+    apt:
+      name: python3-pymysql
+      state: present
+    notify:
+      - restart-mysql
+
+  - name: ensure MySQL is started and enabled at reboot
+    service:
+      name: "{{ mysql_service_name }}"
+      state: started
+      enabled: yes
+
+  - name: check if root my.conf exists
+    stat:
+      path: "/root/.my.cnf"
+    register: my_cnf_status
+
+  - name: Set MySQL root password for the first time (root@localhost)
+    mysql_user:
+      name: root
+      password: "{{ mysql_root_password }}"
+      host: localhost
+      login_unix_socket: "{{ mysql_socket }}"
+      state: present
+
+  - name: Set MySQL root password for 127.0.0.1, ::1, FQDN
+    mysql_user:
+      name: root
+      password: "{{ mysql_root_password }}"
+      host: "{{ item }}"
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
+      login_unix_socket: "{{ mysql_socket }}"
+      state: present
+    with_items:
+      - ::1
+      - 127.0.0.1
+      - "{{ ansible_fqdn }}"
+
+  - name: Place ~/.my.cnf for root user
+    template:
+     src: .my.cnf.j2
+     dest: "/root/.my.cnf"
+    when: not my_cnf_status.stat.exists
+
+  - name: Set directory path
+    set_fact:
+      path: "{{ wp_install_path }}/{{ wp_directory_name }}"
+
+  - name: Place ~/.my.cnf for wordpress user
+    template:
+      src: .my.cnf.wordpress.j2
+      dest: "{{ path }}/.my.cnf"
+      owner: "{{ wordpress_user }}"
+      group: "{{ wordpress_user }}"
+
+  - name: create WordPress Database
+    mysql_db:
+      name: "{{ wordpress_database_name }}"
+      state: present
+      login_unix_socket: /run/mysqld/mysqld.sock
+
+  - name: Grant all previliges to wordpress user
+    mysql_user:
+      name: "{{ mysql_wordpress_username }}"
+      password: "{{ mysql_wordpress_password }}"
+      priv: '{{ wordpress_database_name }}.*:ALL'
+      host: 'localhost'
+      state: present
+      login_unix_socket: /run/mysqld/mysqld.sock
