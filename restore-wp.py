@@ -126,7 +126,7 @@ if BACKUP_DEST == 'FTP':
     ftpserver.cwd(FTP_PATH + "/" + RESTORE_FOLDER)
 
     for file in [MysqlBackupFilename,WordPressBackupFilename]:
-        print("Transfering" + file)
+        print("Transfering " + file)
         result=tools.downloadftp(ftpserver,file,TODAYRESTOREPATH)
 
     tools.closeftp(ftpserver)
