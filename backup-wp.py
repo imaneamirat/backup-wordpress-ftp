@@ -304,7 +304,7 @@ except:
     if VERBOSE == 2:
         print("Error during connection to FTP Server " + FTP_SERVER + " : please check parameters")
         MESSAGE="""Backup failed
-        Error during connection to FTP Server """ + FTP_SERVER + " : please check parameters"
+        Error during connection to FTP Server """ + FTP_SERVER + " : please check FTP parameters"
         tools.sendmail(mailfrom=SMTP_FROM,mailto=SMTP_TO,message=MESSAGE,subject="Backup of Wordpress of " + TODAY, smtphost=SMTP_HOST)
         exit(1)
 
@@ -314,7 +314,7 @@ except:
     if VERBOSE == 2:
         print("Error during CWD on FTP Server " + FTP_SERVER + " : please check parameters")
         MESSAGE="""Backup failed
-        Error during CWD on FTP Server """ + FTP_SERVER + " : please check parameters"
+        Error during CWD on FTP Server """ + FTP_SERVER + " : please check BACKUP_PATH parameter"
         tools.sendmail(mailfrom=SMTP_FROM,mailto=SMTP_TO,message=MESSAGE,subject="Backup of Wordpress of " + TODAY, smtphost=SMTP_HOST)
         exit(1)
 
