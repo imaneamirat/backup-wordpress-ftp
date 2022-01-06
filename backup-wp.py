@@ -298,8 +298,25 @@ if VERBOSE >= 1:
     print ("Starting Copy to FTP Server")
     print ("")
 
-ftpserver=tools.connectftp(FTP_SERVER,FTP_USER,FTP_PASSWD)
-ftpserver.cwd(FTP_ROOT_PATH)
+try:
+    ftpserver=tools.connectftp(FTP_SERVER,FTP_USER,FTP_PASSWD)
+except:
+    if VERBOSE == 2:
+        print("Error during connection to FTP Server " + FTP_SERVER + " : please check parameters")
+        MESSAGE="""Backup failed
+        Error during connection to FTP Server """ + FTP_SERVER + " : please check parameters"
+        tools.sendmail(mailfrom=SMTP_FROM,mailto=SMTP_TO,message=MESSAGE,subject="Backup of Wordpress of " + TODAY, smtphost=SMTP_HOST)
+        exit(1)
+
+try:
+    ftpserver.cwd(FTP_ROOT_PATH)
+except:
+    if VERBOSE == 2:
+        print("Error during CWD on FTP Server " + FTP_SERVER + " : please check parameters")
+        MESSAGE="""Backup failed
+        Error during CWD on FTP Server """ + FTP_SERVER + " : please check parameters"
+        tools.sendmail(mailfrom=SMTP_FROM,mailto=SMTP_TO,message=MESSAGE,subject="Backup of Wordpress of " + TODAY, smtphost=SMTP_HOST)
+        exit(1)
 
 if VERBOSE == 2:
     print ("Init : Create FTP folder if not existing")
