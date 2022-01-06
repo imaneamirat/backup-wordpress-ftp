@@ -302,7 +302,7 @@ try:
     ftpserver=tools.connectftp(FTP_SERVER,FTP_USER,FTP_PASSWD)
 except:
     if VERBOSE == 2:
-        print("Error during connection to FTP Server " + FTP_SERVER + " : please check parameters")
+        print("Error during connection to FTP Server " + FTP_SERVER + " : please check FTP parameters")
         MESSAGE="""Backup failed
         Error during connection to FTP Server """ + FTP_SERVER + " : please check FTP parameters"
         tools.sendmail(mailfrom=SMTP_FROM,mailto=SMTP_TO,message=MESSAGE,subject="Backup of Wordpress of " + TODAY, smtphost=SMTP_HOST)
@@ -312,7 +312,7 @@ try:
     ftpserver.cwd(FTP_ROOT_PATH)
 except:
     if VERBOSE == 2:
-        print("Error during CWD on FTP Server " + FTP_SERVER + " : please check parameters")
+        print("Error during CWD on FTP Server " + FTP_SERVER + " : please check BACKUP_PATH parameters")
         MESSAGE="""Backup failed
         Error during CWD on FTP Server """ + FTP_SERVER + " : please check BACKUP_PATH parameter"
         tools.sendmail(mailfrom=SMTP_FROM,mailto=SMTP_TO,message=MESSAGE,subject="Backup of Wordpress of " + TODAY, smtphost=SMTP_HOST)
